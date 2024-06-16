@@ -4,19 +4,13 @@ import 'package:provider/provider.dart';
 import '../../provider/app_provider.dart';
 import '../../widgets/task_card.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   static const String routeName = '/home';
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-
-  @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MyAppProvider>(context, listen: false);
+    final provider = Provider.of<MyAppProvider>(context);
     final tasksList = provider.tasks;
     final key = provider.listKey;
     final theme = Theme.of(context);
