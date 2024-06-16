@@ -108,6 +108,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                         curve: Curves.easeInOut),
                     icon: const Icon(
                       Icons.task_alt_rounded,
+                      size: 32,
                       color: Colors.white,
                     )),
                 IconButton(
@@ -116,6 +117,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                         curve: Curves.easeInOut),
                     icon: const Icon(
                       Icons.settings,
+                      size: 32,
                       color: Colors.white,
                     )),
               ],

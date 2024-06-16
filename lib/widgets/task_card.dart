@@ -104,12 +104,12 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                   onPressed: (context) {
                     provider.deleteTask(widget.index);
                   },
+
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
                   icon: Icons.delete,
                   label: 'Delete',
                 ),
-
               ],
             ),
             child: Card(
