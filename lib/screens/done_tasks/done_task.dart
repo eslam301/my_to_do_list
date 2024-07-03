@@ -4,21 +4,21 @@ import 'package:provider/provider.dart';
 import '../../provider/app_provider.dart';
 import '../../widgets/task_card.dart';
 
-class HomeScreen extends StatelessWidget {
-  static const String routeName = '/home';
-  const HomeScreen({super.key});
+class DoneTaskView extends StatelessWidget {
+  static const String routeName = '/doneTask';
+  const DoneTaskView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MyAppProvider>(context);
-    final tasksList = provider.activeTasks;
-    final key = provider.listKey;
+    final tasksList = provider.doneTasks;
+    final key = provider.doneListKey;
     final theme = Theme.of(context);
-    return Scaffold(
-      body: tasksList.isEmpty
+    return Container(
+      child: tasksList.isEmpty
           ? Center(
         child: Text(
-          'No tasks added yet',
+          'No tasks Done yet',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -41,12 +41,13 @@ class HomeScreen extends StatelessWidget {
             opacity: curvedAnimation,
             child: SlideTransition(
               position:Tween<Offset>(
-            begin: const Offset(-1, 0),
-            end: Offset.zero,
-                        ).animate(curvedAnimation),
+                begin: const Offset(-1, 0),
+                end: Offset.zero,
+              ).animate(curvedAnimation),
               child: TaskCard(
                 index: index,
                 tasks: tasksList,
+                isDone: true,
               ),
             ),
           );

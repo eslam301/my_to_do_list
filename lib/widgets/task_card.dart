@@ -11,8 +11,13 @@ import 'my_text_box.dart';
 class TaskCard extends StatefulWidget {
   final int index;
   final List<Map<String, dynamic>> tasks;
+  final bool isDone;
 
-  const TaskCard({super.key, required this.index, required this.tasks});
+  const TaskCard(
+      {super.key,
+      required this.index,
+      required this.tasks,
+      this.isDone = false});
 
   @override
   State<TaskCard> createState() => _TaskCardState();
@@ -37,7 +42,15 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: theme.colorScheme.onPrimary
+        color: theme.colorScheme.onPrimary,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            spreadRadius: 1,
+            blurRadius: 1.4,
+            offset: const Offset(0, 1), // changes position of shadow
+          ),
+        ],
       ),
       child: Stack(
         children: [
@@ -65,7 +78,9 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
               dragDismissible: true,
               closeThreshold: 0.5,
               dismissible: DismissiblePane(onDismissed: () {
-                provider.deleteTask(widget.index);
+                widget.isDone
+                    ? provider.undone(widget.index)
+                    : provider.done(widget.index);
               }),
               extentRatio: 0.3,
               motion: const DrawerMotion(),
@@ -73,7 +88,9 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                 SlidableAction(
                   autoClose: true,
                   onPressed: (context) {
-                    provider.deleteTask(widget.index);
+                    widget.isDone
+                        ? provider.undone(widget.index)
+                        : provider.done(widget.index);
                   },
                   backgroundColor: Colors.green,
                   foregroundColor: Colors.white,
@@ -86,25 +103,24 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
               dragDismissible: true,
               closeThreshold: 0.6,
               dismissible: DismissiblePane(onDismissed: () {
-                provider.deleteTask(widget.index);
+                provider.deleteActiveTask(widget.index);
               }),
               extentRatio: 0.45,
               motion: const DrawerMotion(),
               children: [
                 SlidableAction(
-                onPressed: (context) {
-                  openEditBottomSheet(context, widget.index);
-                },
-                backgroundColor: theme.primaryColor,
-                foregroundColor: Colors.white,
-                icon: Icons.edit,
-                label: 'edit',
-              ),
+                  onPressed: (context) {
+                    openEditBottomSheet(context, widget.index);
+                  },
+                  backgroundColor: theme.primaryColor,
+                  foregroundColor: Colors.white,
+                  icon: Icons.edit,
+                  label: 'edit',
+                ),
                 SlidableAction(
                   onPressed: (context) {
-                    provider.deleteTask(widget.index);
+                    provider.deleteActiveTask(widget.index);
                   },
-
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
                   icon: Icons.delete,
@@ -123,7 +139,8 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                   onLongPress: () {
                     openEditBottomSheet(context, widget.index);
                   },
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.black54, size: 18),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded,
+                      color: Colors.black54, size: 18),
                   title: Text(
                     title,
                     style: GoogleFonts.ubuntu(
@@ -208,11 +225,15 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                 MySmallButton(
                   label: 'Edit',
                   onPressed: () {
-                    provider.updateTask(index, {
-                      'title': titleController.text,
-                      'subtitle': subtitleController.text,
-                      'date': DateTime.now().toString(),
-                    });
+                    provider.updateTask(
+                      index: index,
+                      isDone: widget.isDone,
+                      newTask: {
+                        'title': titleController.text,
+                        'subtitle': subtitleController.text,
+                        'date': DateTime.now().toString(),
+                      },
+                    );
                     Navigator.pop(context);
                   },
                 ),

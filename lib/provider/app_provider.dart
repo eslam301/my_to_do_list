@@ -4,14 +4,18 @@ import 'dart:convert';
 
 class MyAppProvider extends ChangeNotifier {
   bool isDoneIntroductionScreen = false;
-  int index = 0;
+  int activeTasksIndex = 0;
+  int doneTasksIndex = 0;
   bool isDarkMode = false;
+  bool isNotifications_on = true;
   ThemeMode themeMode = ThemeMode.light;
   double volume = 0.5;
   String language = 'English';
 
   GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
-  List<Map<String, dynamic>> tasks = [];
+  GlobalKey<AnimatedListState> doneListKey = GlobalKey<AnimatedListState>();
+  List<Map<String, dynamic>> activeTasks = [];
+  List<Map<String, dynamic>> doneTasks = [];
   MyAppProvider() {
     // Load tasks and theme when the provider is initialized
     _initializePreferences();
@@ -20,54 +24,107 @@ class MyAppProvider extends ChangeNotifier {
   Future<void> _initializePreferences() async {
     await getIntroState();
     await getThemeFromPrefs();
-    await getTasksFromPrefs();
-  }
-  void getLanguage() {
-    notifyListeners();
-  }
-  Future<void> saveTasksToPrefs() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setInt('index', index);
-    prefs.setString('tasks', jsonEncode(tasks));
+    await getActiveTasksFromPrefs();
+    await getDoneTasksFromPrefs();
   }
 
-  Future<void> getTasksFromPrefs() async {
+  Future<void> saveActiveTasksToPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    index = prefs.getInt('index') ?? 0;
-    String? tasksString = prefs.getString('tasks');
+    prefs.setInt('ActiveIndex', activeTasksIndex);
+    prefs.setString('activeTasks', jsonEncode(activeTasks));
+  }
+
+  Future<void> saveDoneTasksToPrefs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('doneIndex', doneTasksIndex);
+    prefs.setString('doneTasks', jsonEncode(doneTasks));
+  }
+
+  Future<void> getActiveTasksFromPrefs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    activeTasksIndex = prefs.getInt('ActiveIndex') ?? 0;
+    String? tasksString = prefs.getString('activeTasks');
     if (tasksString != null && tasksString.isNotEmpty) {
-      tasks = List<Map<String, dynamic>>.from(jsonDecode(tasksString));
+      activeTasks = List<Map<String, dynamic>>.from(jsonDecode(tasksString));
     } else {
-      tasks = [];
+      activeTasks = [];
+    }
+    notifyListeners();
+  }
+
+  Future<void> getDoneTasksFromPrefs() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    doneTasksIndex = prefs.getInt('doneIndex') ?? 0;
+    String? tasksString = prefs.getString('doneTasks');
+    if (tasksString != null && tasksString.isNotEmpty) {
+      doneTasks = List<Map<String, dynamic>>.from(jsonDecode(tasksString));
+    } else {
+      doneTasks = [];
     }
     notifyListeners();
   }
 
   void changePageIndex(int index) {
-    this.index = index;
-    saveTasksToPrefs();  // Save the index change to prefs
+    this.activeTasksIndex = index;
+    saveActiveTasksToPrefs(); // Save the index change to prefs
     notifyListeners();
   }
 
-  void addTask(Map<String, dynamic> task) {
-    tasks.add(task);
-    saveTasksToPrefs();
-    listKey.currentState?.insertItem(tasks.length - 1);
+  void addActiveTask(Map<String, dynamic> task) {
+    activeTasks.add(task);
+    saveActiveTasksToPrefs();
+    listKey.currentState?.insertItem(activeTasks.length - 1);
     notifyListeners();
   }
 
-  void deleteTask(int index) {
-    tasks.removeAt(index);
-    saveTasksToPrefs();
+  void addDoneTask(Map<String, dynamic> task) {
+    doneTasks.add(task);
+    saveDoneTasksToPrefs();
+    doneListKey.currentState?.insertItem(doneTasks.length - 1);
+    notifyListeners();
+  }
+
+  void deleteActiveTask(int index) {
+    activeTasks.removeAt(index);
+    saveActiveTasksToPrefs();
     listKey.currentState?.removeItem(index, (context, animation) {
       return const SizedBox();
     });
     notifyListeners();
   }
 
-  void updateTask(int index, Map<String, dynamic> newTask) {
-    tasks[index] = newTask;
-    saveTasksToPrefs();
+  void deleteDoneTask(int index) {
+    doneTasks.removeAt(index);
+    saveDoneTasksToPrefs();
+    doneListKey.currentState?.removeItem(index, (context, animation) {
+      return const SizedBox();
+    });
+    notifyListeners();
+  }
+
+  void done(int index) {
+    addDoneTask(activeTasks[index]);
+    deleteActiveTask(index);
+    saveActiveTasksToPrefs();
+    saveDoneTasksToPrefs();
+    notifyListeners();
+  }
+
+  undone(int index) {
+    addActiveTask(doneTasks[index]);
+    deleteDoneTask(index);
+
+    saveActiveTasksToPrefs();
+    saveDoneTasksToPrefs();
+    notifyListeners();
+  }
+
+  void updateTask(
+      {required int index,
+      required Map<String, dynamic> newTask,
+      required bool isDone}) {
+    isDone ? doneTasks[index] = newTask : activeTasks[index] = newTask;
+    saveActiveTasksToPrefs();
     notifyListeners();
   }
 
@@ -91,10 +148,16 @@ class MyAppProvider extends ChangeNotifier {
     prefs.setBool('isDoneIntroductionScreen', true);
     notifyListeners();
   }
+
   Future<void> getIntroState() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    isDoneIntroductionScreen = prefs.getBool('isDoneIntroductionScreen') ?? false;
+    isDoneIntroductionScreen =
+        prefs.getBool('isDoneIntroductionScreen') ?? false;
     notifyListeners();
   }
 
+  void changeNotifications() {
+    isNotifications_on = !isNotifications_on;
+    notifyListeners();
+  }
 }

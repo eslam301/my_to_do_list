@@ -5,16 +5,18 @@ import 'package:google_fonts/google_fonts.dart';
 class ApplicationTheme {
 
   static const Color primaryColor = Color(0xff2d4356);
-  static const Color secondaryColor = Colors.deepPurpleAccent;
+  static const Color secondaryColor = Color(0xffe5e5e5);
   static const Color lightBackgroundColor = Color(0xffe5e5e5);
   static const Color darkBackgroundColor = Color(0xff1e1e1e);
   static const Color onBackgroundColor = Color(0xffffffff);
+  static const Color taskColor = Color(0xffb7b7b7);
+
   static final ThemeData lightTheme = ThemeData(
     primaryColor: primaryColor,
     colorScheme: ColorScheme(
       brightness: Brightness.light,
       primary: primaryColor,
-      onPrimary: onBackgroundColor,
+      onPrimary: taskColor,
       secondary: secondaryColor,
       onSecondary: onBackgroundColor,
       error: Colors.red,
@@ -61,7 +63,7 @@ class ApplicationTheme {
     colorScheme: ColorScheme(
       brightness: Brightness.dark,
       primary: primaryColor,
-      onPrimary: onBackgroundColor,
+      onPrimary: taskColor,
       secondary: secondaryColor,
       onSecondary: onBackgroundColor,
       error: Colors.red,

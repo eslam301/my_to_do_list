@@ -16,6 +16,7 @@ class SettingsScreenState extends State<SettingsScreen> {
     ThemeData theme = Theme.of(context);
     var provider = Provider.of<MyAppProvider>(context);
     bool isDarkMode = provider.isDarkMode;
+    bool isNotifications_on = provider.isNotifications_on;
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
@@ -31,7 +32,7 @@ class SettingsScreenState extends State<SettingsScreen> {
           clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: isDarkMode ? Colors.white38 : theme.primaryColor,
+            color: isDarkMode ? Colors.white38 : theme.primaryColor.withOpacity(0.8),
           ),
           child: Column(
             children: [
@@ -53,36 +54,18 @@ class SettingsScreenState extends State<SettingsScreen> {
               ),
               ListTile(
                 title: Text(
-                  'Language',
+                  'Notifications',
                   style: GoogleFonts.ubuntu(
                       color: isDarkMode ? theme.primaryColor : Colors.white,
                       fontSize: 20),
                 ),
-                subtitle: DropdownButton<String>(
-                  value: provider.language,
-                  onChanged: (String? newValue) {
+                trailing: Switch(
+                  value: isNotifications_on,
+                  onChanged: (value) {
                     setState(() {
-                      provider.language = newValue!;
+                      provider.changeNotifications();
                     });
                   },
-                  icon: const Icon(Icons.arrow_drop_down),
-                  dropdownColor: theme.primaryColor,
-                  style: GoogleFonts.ubuntu(
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      fontSize: 20),
-                  borderRadius: BorderRadius.circular(20),
-                  underline: Container(),
-                  isExpanded: true,
-                  alignment: Alignment.center,
-                  iconSize: 30,
-                  padding: const EdgeInsets.all(10),
-                  items: <String>['English', 'Spanish', 'French', 'German']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
                 ),
               ),
             ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_to_do_list/layout/home_layout.dart';
 import 'package:my_to_do_list/provider/app_provider.dart';
+import 'package:my_to_do_list/screens/done_tasks/done_task.dart';
 import 'package:my_to_do_list/screens/introduction/introduction_screens.dart';
 import 'package:my_to_do_list/screens/splash/splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       routes: {
         SplashScreen.routeName: (context) => const SplashScreen(),
         HomeLayout.routeName: (context) => const HomeLayout(),
+        DoneTaskView.routeName: (context) => const DoneTaskView(),
         MyIntroductionScreens.routeName: (context) => const MyIntroductionScreens(),
       },
     );

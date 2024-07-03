@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_to_do_list/layout/base_screen_layout.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/app_provider.dart';
+import '../screens/done_tasks/done_task.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/settings/settings.dart';
 import '../widgets/my_small_button.dart';
@@ -28,7 +30,7 @@ class _HomeLayoutState extends State<HomeLayout> {
 
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: provider.index == 0
+      floatingActionButton: provider.activeTasksIndex == 0
           ? FloatingActionButton(
               elevation: 20,
               shape: const CircleBorder(),
@@ -51,7 +53,6 @@ class _HomeLayoutState extends State<HomeLayout> {
             ),
             color: theme.primaryColor,
           ),
-
           child: AppBar(
             title: Text(
               'My To Do List',
@@ -103,9 +104,15 @@ class _HomeLayoutState extends State<HomeLayout> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                    onPressed: () => pageController.animateToPage(0,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const BaseScreenLayout(
+                                    titleName: 'Done Tasks',
+                                    bodyWidget: DoneTaskView(),
+                                  )));
+                    },
                     icon: const Icon(
                       Icons.task_alt_rounded,
                       size: 32,
@@ -180,7 +187,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                 ),
                 MySmallButton(
                   onPressed: () {
-                    provider.addTask({
+                    provider.addActiveTask({
                       'title': titleTaskController.text,
                       'subtitle': subtitleTaskController.text,
                       'date': DateTime.now().toString()
