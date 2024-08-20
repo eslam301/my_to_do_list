@@ -91,11 +91,14 @@ class _HomeLayoutState extends State<HomeLayout> {
         children: screens,
       ),
       bottomNavigationBar: Container(
+
         clipBehavior: Clip.antiAlias,
         decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(30),
             topRight: Radius.circular(30),
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
           ),
         ),
         child: BottomAppBar(

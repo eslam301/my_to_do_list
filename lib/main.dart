@@ -10,7 +10,7 @@ import 'core/theme/application_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(
     MultiProvider(
       providers: [
@@ -26,9 +26,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
-      SystemUiOverlay.top,
-    ]);
     var provider = Provider.of<MyAppProvider>(context);
     ThemeMode? themeMode = provider.themeMode;
     return MaterialApp(
